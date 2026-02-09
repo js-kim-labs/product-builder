@@ -1,8 +1,6 @@
-const themeToggle = document.getElementById('theme-toggle');
-const generateBtn = document.getElementById('generate-btn');
-const lottoContainer = document.getElementById('lotto-container');
-
 // Theme
+const themeToggle = document.getElementById('theme-toggle');
+
 function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
@@ -19,7 +17,26 @@ const saved = localStorage.getItem('theme')
     || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 setTheme(saved);
 
-// Lotto
+// Mobile Menu Toggle
+const menuToggle = document.getElementById('menu-toggle');
+const siteNav = document.getElementById('site-nav');
+
+if (menuToggle && siteNav) {
+    menuToggle.addEventListener('click', () => {
+        siteNav.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!menuToggle.contains(e.target) && !siteNav.contains(e.target)) {
+            siteNav.classList.remove('open');
+        }
+    });
+}
+
+// Lotto Generator
+const generateBtn = document.getElementById('generate-btn');
+const lottoContainer = document.getElementById('lotto-container');
+
 function getBallColor(n) {
     if (n <= 10) return 'yellow';
     if (n <= 20) return 'blue';
@@ -60,12 +77,33 @@ function generateLotto() {
     lottoContainer.appendChild(bonusBall);
 }
 
-generateBtn.addEventListener('click', generateLotto);
-generateLotto();
+if (generateBtn && lottoContainer) {
+    generateBtn.addEventListener('click', generateLotto);
+    generateLotto();
+}
+
+// FAQ Accordion
+document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+
+        document.querySelectorAll('.faq-item.open').forEach(openItem => {
+            openItem.classList.remove('open');
+            openItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+
+        if (!isOpen) {
+            item.classList.add('open');
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    });
+});
 
 // Utterances Comments
 function loadUtterances(theme) {
     const container = document.getElementById('utterances-container');
+    if (!container) return;
     container.innerHTML = '';
     const script = document.createElement('script');
     script.src = 'https://utteranc.es/client.js';
@@ -93,32 +131,34 @@ loadUtterances(document.documentElement.getAttribute('data-theme'));
 const contactForm = document.getElementById('contact-form');
 const formStatus = document.getElementById('form-status');
 
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = contactForm.querySelector('.submit-btn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = '보내는 중...';
-    formStatus.textContent = '';
-    formStatus.className = 'form-status';
+if (contactForm && formStatus) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = contactForm.querySelector('.submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '보내는 중...';
+        formStatus.textContent = '';
+        formStatus.className = 'form-status';
 
-    try {
-        const res = await fetch(contactForm.action, {
-            method: 'POST',
-            body: new FormData(contactForm),
-            headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-            formStatus.textContent = '문의가 성공적으로 전송되었습니다!';
-            formStatus.classList.add('success');
-            contactForm.reset();
-        } else {
-            throw new Error();
+        try {
+            const res = await fetch(contactForm.action, {
+                method: 'POST',
+                body: new FormData(contactForm),
+                headers: { 'Accept': 'application/json' }
+            });
+            if (res.ok) {
+                formStatus.textContent = '문의가 성공적으로 전송되었습니다!';
+                formStatus.classList.add('success');
+                contactForm.reset();
+            } else {
+                throw new Error();
+            }
+        } catch {
+            formStatus.textContent = '전송에 실패했습니다. 다시 시도해주세요.';
+            formStatus.classList.add('error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '문의 보내기';
         }
-    } catch {
-        formStatus.textContent = '전송에 실패했습니다. 다시 시도해주세요.';
-        formStatus.classList.add('error');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = '문의 보내기';
-    }
-});
+    });
+}
