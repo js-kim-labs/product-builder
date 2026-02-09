@@ -239,6 +239,22 @@ h1 {
     color: #e84118;
 }
 
+/* Ad Container */
+.ad-container {
+    width: 100%;
+    max-width: 580px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.ad-container ins {
+    width: 100%;
+}
+
 /* Comments */
 .comments-section {
     width: 100%;
