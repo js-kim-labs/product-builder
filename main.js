@@ -7,6 +7,7 @@ function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
     localStorage.setItem('theme', theme);
+    updateUtterancesTheme(theme);
 }
 
 themeToggle.addEventListener('click', () => {
@@ -61,6 +62,32 @@ function generateLotto() {
 
 generateBtn.addEventListener('click', generateLotto);
 generateLotto();
+
+// Utterances Comments
+function loadUtterances(theme) {
+    const container = document.getElementById('utterances-container');
+    container.innerHTML = '';
+    const script = document.createElement('script');
+    script.src = 'https://utteranc.es/client.js';
+    script.setAttribute('repo', 'js-kim-labs/product-builder');
+    script.setAttribute('issue-term', 'pathname');
+    script.setAttribute('theme', theme === 'dark' ? 'github-dark' : 'github-light');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    container.appendChild(script);
+}
+
+function updateUtterancesTheme(theme) {
+    const iframe = document.querySelector('.utterances-frame');
+    if (iframe) {
+        iframe.contentWindow.postMessage(
+            { type: 'set-theme', theme: theme === 'dark' ? 'github-dark' : 'github-light' },
+            'https://utteranc.es'
+        );
+    }
+}
+
+loadUtterances(document.documentElement.getAttribute('data-theme'));
 
 // Contact Form
 const contactForm = document.getElementById('contact-form');
