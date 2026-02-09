@@ -61,3 +61,37 @@ function generateLotto() {
 
 generateBtn.addEventListener('click', generateLotto);
 generateLotto();
+
+// Contact Form
+const contactForm = document.getElementById('contact-form');
+const formStatus = document.getElementById('form-status');
+
+contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = contactForm.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '보내는 중...';
+    formStatus.textContent = '';
+    formStatus.className = 'form-status';
+
+    try {
+        const res = await fetch(contactForm.action, {
+            method: 'POST',
+            body: new FormData(contactForm),
+            headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+            formStatus.textContent = '문의가 성공적으로 전송되었습니다!';
+            formStatus.classList.add('success');
+            contactForm.reset();
+        } else {
+            throw new Error();
+        }
+    } catch {
+        formStatus.textContent = '전송에 실패했습니다. 다시 시도해주세요.';
+        formStatus.classList.add('error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '문의 보내기';
+    }
+});
