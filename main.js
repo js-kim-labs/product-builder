@@ -36,6 +36,16 @@ if (menuToggle && siteNav) {
 // Lotto Generator
 const generateBtn = document.getElementById('generate-btn');
 const lottoContainer = document.getElementById('lotto-container');
+let setCount = 1;
+
+// Set count selector
+document.querySelectorAll('.set-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.set-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        setCount = parseInt(btn.dataset.count, 10);
+    });
+});
 
 function getBallColor(n) {
     if (n <= 10) return 'yellow';
@@ -45,36 +55,62 @@ function getBallColor(n) {
     return 'green';
 }
 
-function generateLotto() {
+function generateOneSet() {
     const numbers = [];
     while (numbers.length < 7) {
         const n = Math.floor(Math.random() * 45) + 1;
         if (!numbers.includes(n)) numbers.push(n);
     }
+    return {
+        main: numbers.slice(0, 6).sort((a, b) => a - b),
+        bonus: numbers[6]
+    };
+}
 
-    const main = numbers.slice(0, 6).sort((a, b) => a - b);
-    const bonus = numbers[6];
+function renderSet(set, index, total) {
+    const row = document.createElement('div');
+    row.className = 'lotto-row';
 
-    lottoContainer.innerHTML = '';
+    if (total > 1) {
+        const label = document.createElement('span');
+        label.className = 'row-label';
+        label.textContent = String.fromCharCode(65 + index);
+        row.appendChild(label);
+    }
 
-    main.forEach((n, i) => {
+    const balls = document.createElement('div');
+    balls.className = 'lotto-balls';
+
+    set.main.forEach((n, i) => {
         const ball = document.createElement('div');
         ball.className = `ball ${getBallColor(n)}`;
         ball.textContent = n;
-        ball.style.animationDelay = `${i * 0.08}s`;
-        lottoContainer.appendChild(ball);
+        ball.style.animationDelay = `${index * 0.15 + i * 0.06}s`;
+        balls.appendChild(ball);
     });
 
     const sep = document.createElement('span');
     sep.className = 'bonus-separator';
     sep.textContent = '+';
-    lottoContainer.appendChild(sep);
+    balls.appendChild(sep);
 
     const bonusBall = document.createElement('div');
-    bonusBall.className = `ball ${getBallColor(bonus)}`;
-    bonusBall.textContent = bonus;
-    bonusBall.style.animationDelay = '0.5s';
-    lottoContainer.appendChild(bonusBall);
+    bonusBall.className = `ball ${getBallColor(set.bonus)}`;
+    bonusBall.textContent = set.bonus;
+    bonusBall.style.animationDelay = `${index * 0.15 + 0.4}s`;
+    balls.appendChild(bonusBall);
+
+    row.appendChild(balls);
+    return row;
+}
+
+function generateLotto() {
+    lottoContainer.innerHTML = '';
+
+    for (let i = 0; i < setCount; i++) {
+        const set = generateOneSet();
+        lottoContainer.appendChild(renderSet(set, i, setCount));
+    }
 }
 
 if (generateBtn && lottoContainer) {

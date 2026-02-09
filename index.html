@@ -35,6 +35,15 @@
         <article class="container generator-section">
             <h1>로또 번호 생성기</h1>
             <p class="section-desc">버튼을 눌러 행운의 로또 번호 6개와 보너스 번호 1개를 뽑아보세요.</p>
+            <div class="set-selector">
+                <label for="set-count">생성 세트 수</label>
+                <div class="set-buttons">
+                    <button type="button" class="set-btn active" data-count="1">1</button>
+                    <button type="button" class="set-btn" data-count="3">3</button>
+                    <button type="button" class="set-btn" data-count="5">5</button>
+                    <button type="button" class="set-btn" data-count="10">10</button>
+                </div>
+            </div>
             <div id="lotto-container"></div>
             <button id="generate-btn">번호 생성하기</button>
         </article>
